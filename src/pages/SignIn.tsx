@@ -1,13 +1,31 @@
-import React, { useState } from "react";
-import { Link } from "raviger";
+import React, { useContext, useState } from "react";
+import { Link, navigate } from "raviger";
 
 import Header from "../components/NavBar";
+import { login } from "../utils/ApiUtils";
+import { UserLoginContext } from "../context/UserLoginContext";
 
 function SignIn() {
-  const [formData, setFormData] = useState<{ email: string; password: string }>({
-    email: "",
-    password: "",
+  const { setUser } = useContext(UserLoginContext);
+  const [formData, setFormData] = useState<{ username: string; password: string }>({
+    username: "admin",
+    password: "devadminpass",
   });
+
+  async function formSubmitHandler(event: React.FormEvent) {
+    event.preventDefault();
+    console.log(formData);
+    try {
+      const data = await login(formData);
+      console.log(data);
+      localStorage.setItem("token", data.token);
+      await setUser();
+      // navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
       {/*  Site header */}
@@ -27,22 +45,22 @@ function SignIn() {
 
               {/* Form */}
               <div className="max-w-sm mx-auto">
-                <form>
+                <form onSubmit={formSubmitHandler}>
                   <div className="flex flex-wrap -mx-3 mb-4">
                     <div className="w-full px-3">
                       <label
                         className="block text-gray-800 text-sm font-medium mb-1"
-                        htmlFor="email"
+                        htmlFor="username"
                       >
-                        Email <span className="text-red-600">*</span>
+                        Username <span className="text-red-600">*</span>
                       </label>
                       <input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        id="username"
+                        type="username"
+                        value={formData.username}
+                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                         className="bg-white border border-gray-300 focus:border-gray-500 py-3 px-4 w-full text-gray-800"
-                        placeholder="Enter your email address"
+                        placeholder="Enter your username"
                         required
                       />
                     </div>
@@ -89,7 +107,10 @@ function SignIn() {
                   </div>
                   <div className="flex flex-wrap -mx-3 mt-6">
                     <div className="w-full px-3">
-                      <button className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-blue-600 hover:bg-blue-700 w-full">
+                      <button
+                        type="submit"
+                        className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-blue-600 hover:bg-blue-700 w-full"
+                      >
                         Sign in
                       </button>
                     </div>

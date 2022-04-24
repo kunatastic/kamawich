@@ -1,8 +1,34 @@
-import React from "react";
-import { Link } from "raviger";
+import React, { useContext, useState } from "react";
+import { Link, navigate } from "raviger";
 import Header from "../components/NavBar";
+import { signup } from "../utils/ApiUtils";
+import { UserLoginContext } from "../context/UserLoginContext";
 
 function SignUp() {
+  // const [formData, setFormData] = useState({
+  //   username: "",
+  //   email: "",
+  //   password1: "",
+  //   password2: "",
+  // });
+  const [formData, setFormData] = useState({
+    username: "test123",
+    email: "test123@gmail.com",
+    password1: "Welcome@123",
+    password2: "Welcome@123",
+  });
+
+  async function formSubmitHandler(event: React.FormEvent) {
+    event.preventDefault();
+    console.log(formData);
+    try {
+      await signup(formData);
+      navigate("/signin");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
       {/*  Site header */}
@@ -22,14 +48,14 @@ function SignUp() {
 
               {/* Form */}
               <div className="max-w-sm mx-auto">
-                <form>
+                <form onSubmit={formSubmitHandler}>
                   <div className="flex flex-wrap -mx-3 mb-4">
                     <div className="w-full px-3">
                       <label
                         className="block text-gray-800 text-sm font-medium mb-1"
                         htmlFor="name"
                       >
-                        Name <span className="text-red-600">*</span>
+                        Username <span className="text-red-600">*</span>
                       </label>
                       <input
                         id="name"
@@ -37,6 +63,8 @@ function SignUp() {
                         className="bg-white border border-gray-300 focus:border-gray-500 rounded py-3 px-4 placeholder-gray-500 w-full text-gray-800"
                         placeholder="Enter your name"
                         required
+                        value={formData.username}
+                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                       />
                     </div>
                   </div>
@@ -54,6 +82,8 @@ function SignUp() {
                         className="bg-white border border-gray-300 focus:border-gray-500 rounded py-3 px-4 placeholder-gray-500 w-full text-gray-800"
                         placeholder="Enter your email address"
                         required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
                   </div>
@@ -63,20 +93,44 @@ function SignUp() {
                         className="block text-gray-800 text-sm font-medium mb-1"
                         htmlFor="password"
                       >
-                        Password <span className="text-red-600">*</span>
+                        Password 1<span className="text-red-600">*</span>
                       </label>
                       <input
-                        id="password"
+                        id="password1"
                         type="password"
                         className="bg-white border border-gray-300 focus:border-gray-500 rounded py-3 px-4 placeholder-gray-500 w-full text-gray-800"
                         placeholder="Enter your password"
                         required
+                        value={formData.password1}
+                        onChange={(e) => setFormData({ ...formData, password1: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap -mx-3 mb-4">
+                    <div className="w-full px-3">
+                      <label
+                        className="block text-gray-800 text-sm font-medium mb-1"
+                        htmlFor="password"
+                      >
+                        Password 2<span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        id="password2"
+                        type="password"
+                        className="bg-white border border-gray-300 focus:border-gray-500 rounded py-3 px-4 placeholder-gray-500 w-full text-gray-800"
+                        placeholder="Confirm your password"
+                        required
+                        value={formData.password2}
+                        onChange={(e) => setFormData({ ...formData, password2: e.target.value })}
                       />
                     </div>
                   </div>
                   <div className="flex flex-wrap -mx-3 mt-6">
                     <div className="w-full px-3">
-                      <button className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-blue-600 hover:bg-blue-700 w-full">
+                      <button
+                        type="submit"
+                        className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-blue-600 hover:bg-blue-700 w-full"
+                      >
                         Sign up
                       </button>
                     </div>

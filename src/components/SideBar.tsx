@@ -1,9 +1,12 @@
-import { Link, useLocationChange } from "raviger";
-import React, { useState } from "react";
+import { Link, navigate, useLocationChange } from "raviger";
+import React, { useContext, useState } from "react";
+import { UserLoginContext } from "../context/UserLoginContext";
+import { logout } from "../utils/ApiUtils";
 
 function SideBar(props: { children: React.ReactNode }) {
+  const { setUser } = useContext(UserLoginContext);
   const routesLinks = [
-    { label: "Home", route: "/dashboard", icon: "home" },
+    { label: "Home", route: "/", icon: "home" },
     { label: "Boards", route: "/boards", icon: "columns" },
     { label: "To Do", route: "/todo", icon: "list" },
   ];
@@ -13,6 +16,49 @@ function SideBar(props: { children: React.ReactNode }) {
   console.log(location?.path);
 
   const NAME = "KUNAL KUMAR JHA";
+  async function handleLogout() {
+    logout();
+    await setUser();
+    navigate("/");
+  }
+
+  function timeOfDay() {
+    const date = new Date();
+    const hours = date.getHours();
+    if (hours < 12) {
+      return "Morning";
+    } else if (hours >= 12 && hours < 17) {
+      return "Afternoon";
+    } else {
+      return "Evening";
+    }
+  }
+
+  function getDay() {
+    let outputString;
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const date = new Date();
+    const day = date.getDay();
+    const month = date.getMonth();
+    const dayOfMonth = date.getDate();
+
+    outputString = days[day] + ", " + months[month] + " " + dayOfMonth;
+    return outputString;
+  }
 
   return (
     <div>
@@ -22,7 +68,7 @@ function SideBar(props: { children: React.ReactNode }) {
           <div className="w-64 h-full fixed left-0 top-0">
             <div className="w-full py-8 h-full relative text-white bg-gray-900 text-left capitalize font-medium shadow-xl">
               <Link href="/">
-                <h1 className="pb-10 px-2 font-semibold text-xl mx-auto flex flex-row">
+                <h1 className="pb-10 px-2 font-semibold text-xl flex justify-center gap-2">
                   <span className="text-2xl text-gray-200">Kamawich</span>
                   <svg className="w-8 h-8" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                     <defs>
@@ -78,14 +124,24 @@ function SideBar(props: { children: React.ReactNode }) {
                     <span className="text-blue-500">@</span>
                     {NAME}
                   </div>
-                  <a href="/user/logout/" className="text-gray-700">
+                  <button className="text-gray-700" type="button" onClick={handleLogout}>
                     Logout
-                  </a>
+                  </button>
                 </div>
               </span>
             </div>
           </div>
-          <div className="ml-64 w-full">{props.children}</div>
+          <div className="ml-64 w-full">
+            <div className="h-max sys-app-notCollapsed">
+              <div className="px-10 py-10">
+                {/* Greetings and time */}
+                <h1 className="text-lg py-2">
+                  Good {timeOfDay()}, <span className="text-gray-600">{getDay()}</span>
+                </h1>
+                {props.children}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
