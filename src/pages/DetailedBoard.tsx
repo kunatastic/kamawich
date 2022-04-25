@@ -4,15 +4,15 @@ import Modal from "../common/Modal";
 import CreateStatus from "../components/CreateStatus";
 import CreateTask from "../components/CreateTask";
 import SideBar from "../components/SideBar";
+import TaskStack from "../components/TaskStack";
+import { PER_CARD_WIDTH } from "../config";
 import { BoardType, StatusResponseType, StatusType } from "../types/AppTypes";
 import { getListStatus, getUniqueBoard } from "../utils/ApiUtils";
-
-const PER_CARD_WIDTH = 300;
 
 function DetailedBoard(props: { boardId: string }) {
   const { boardId } = props;
   const [boardData, setBoardData] = useState<BoardType | null>(null);
-  const [listStatus, setListStatus] = useState<StatusType[]>([]);
+  const [statusList, setStatusList] = useState<StatusType[]>([]);
   const [pageDoNotExist, setPageDoNotExist] = useState(false);
   const [newTaskModal, setNewTaskModal] = useState(false);
   const [newStatusModal, setNewStatusModal] = useState(false);
@@ -30,7 +30,7 @@ function DetailedBoard(props: { boardId: string }) {
   async function getStatusListData() {
     try {
       const data: StatusResponseType = await getListStatus();
-      setListStatus(data.results);
+      setStatusList(data.results);
     } catch (err) {
       console.log("ERROR");
       setPageDoNotExist(true);
@@ -85,18 +85,10 @@ function DetailedBoard(props: { boardId: string }) {
 
         {/* horizontal scroll section */}
         <section className="board-card flex overflow-x-auto overflow-y-hidden space-x-9 mt-10 py-4 px-2 scroll-smooth">
-          {listStatus.map((status: StatusType) => (
-            <div
-              key={status.id}
-              className="bg-green-100 border border-green-500 h-full py-5 font-semibold text-center rounded"
-              style={{
-                width: `${PER_CARD_WIDTH}px`,
-              }}
-            >
-              <h3 className="text-xl">{status.title}</h3>
-              <h3 className="font-light">{status?.description}</h3>
-            </div>
-          ))}
+          {boardData &&
+            statusList.map((status: StatusType) => (
+              <TaskStack key={status.id} board={boardData} status={status} />
+            ))}
           <div className="flex-shrink-0">
             <button
               style={{ width: `${PER_CARD_WIDTH}px` }}
@@ -109,9 +101,13 @@ function DetailedBoard(props: { boardId: string }) {
         </section>
 
         {/* Modal */}
-        {newTaskModal && (
+        {newTaskModal && boardData && (
           <Modal onCloseCB={() => setNewTaskModal(false)}>
-            <CreateTask onCloseCB={() => setNewTaskModal(false)} />
+            <CreateTask
+              statusList={statusList}
+              board={boardData}
+              onCloseCB={() => setNewTaskModal(false)}
+            />
           </Modal>
         )}
 
@@ -119,7 +115,7 @@ function DetailedBoard(props: { boardId: string }) {
           <Modal onCloseCB={() => setNewStatusModal(false)}>
             <CreateStatus
               onCloseCB={() => setNewStatusModal(false)}
-              setListStatus={setListStatus}
+              setStatusList={setStatusList}
             />
           </Modal>
         )}

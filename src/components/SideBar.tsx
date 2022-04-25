@@ -93,7 +93,10 @@ function SideBar(props: { children: React.ReactNode }) {
               </span>
             </div>
           </div>
-          <div className="ml-64 w-5/6 min-h-screen bg-opacity-20 bg-white">
+          <div
+            className="w-5/6 min-h-screen bg-opacity-20 bg-white"
+            style={{ marginLeft: "16.666%" }}
+          >
             <div className="h-max sys-app-notCollapsed">
               <div className="px-10 py-10">
                 {/* Greetings and time */}

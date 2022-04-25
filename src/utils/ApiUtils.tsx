@@ -2,6 +2,7 @@ import { API_BASE } from "../config";
 import {
   CreateBoardType,
   CreateStatusType,
+  CreateTaskType,
   UserLoginType,
   UserSignupType,
 } from "../types/AppTypes";
@@ -98,4 +99,14 @@ export async function getListStatus() {
 
 export async function postStatus(data: CreateStatusType) {
   return request("status/", "POST", data);
+}
+
+// Tasks API
+// ---------------------------------------------------
+export async function getListTasks(boardId: string, status?: string) {
+  return request(`boards/${boardId}/tasks/`, "GET", { status });
+}
+
+export async function postTask(boardId: string, data: CreateTaskType) {
+  return request(`boards/${boardId}/tasks/`, "POST", data);
 }

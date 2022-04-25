@@ -22,7 +22,7 @@ export type CreateBoardType = {
 export type BoardType = {
   created_date: string;
   description?: string;
-  id: number;
+  id: string;
   modified_date: string;
   title: string;
 };
@@ -44,7 +44,7 @@ export type CreateStatusType = {
 export type StatusType = {
   created_date: string;
   description?: string;
-  id: number;
+  id: string;
   modified_date: string;
   title: string;
 };
@@ -65,5 +65,22 @@ export type CreateTaskType = {
   status: number;
   title: string;
   description: string;
-  board?: number;
+  board?: string;
+};
+
+export type TaskType = {
+  board_object: BoardType;
+  status_object: StatusType;
+  status: number;
+  title: string;
+  description: string;
+  board?: string;
+  id: string;
+};
+
+export type TaskResponseType = {
+  count: number;
+  next: null | string;
+  previous: null | string;
+  results: TaskType[];
 };

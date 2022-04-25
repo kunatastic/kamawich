@@ -4,7 +4,7 @@ import { postStatus } from "../utils/ApiUtils";
 
 function CreateStatus(props: {
   onCloseCB: () => void;
-  setListStatus: React.Dispatch<React.SetStateAction<StatusType[]>>;
+  setStatusList: React.Dispatch<React.SetStateAction<StatusType[]>>;
 }) {
   const [formData, setFormData] = useState<CreateStatusType>({ title: "", description: "" });
 
@@ -13,7 +13,7 @@ function CreateStatus(props: {
     try {
       const data = await postStatus(formData);
       props.onCloseCB();
-      props.setListStatus((prevState) => [...prevState, data]);
+      props.setStatusList((prevState) => [...prevState, data]);
       console.log(data);
     } catch (err) {
       console.log(err);
