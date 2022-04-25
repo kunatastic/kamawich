@@ -1,4 +1,10 @@
 import { API_BASE } from "../config";
+import {
+  CreateBoardType,
+  CreateStatusType,
+  UserLoginType,
+  UserSignupType,
+} from "../types/AppTypes";
 
 type RequestMethodType = "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 
@@ -42,10 +48,10 @@ async function request(endpoint: string, method: RequestMethodType = "GET", data
       return json;
     } else {
       const errorJson = await response.json();
-      throw Error(errorJson);
+      throw errorJson;
     }
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -54,20 +60,42 @@ export async function me() {
   return request("users/me/");
 }
 
-export async function login(data: { username: string; password: string }) {
+// Authentication API
+// ---------------------------------------------------
+export async function login(data: UserLoginType) {
   return request("auth-token/", "POST", data);
 }
 
-export async function signup(data: {
-  username: string;
-  email: string;
-  password1: string;
-  password2: string;
-}) {
+export async function signup(data: UserSignupType) {
   return request("auth/registration/", "POST", data);
 }
 
 export async function logout() {
   localStorage.removeItem("token");
   return request("auth/logout/");
+}
+
+// Boards API
+// ---------------------------------------------------
+
+export async function postBoard(data: CreateBoardType) {
+  return request("boards/", "POST", data);
+}
+
+export async function getListBoards() {
+  return request("boards/");
+}
+
+export async function getUniqueBoard(boardId: string) {
+  return request(`boards/${boardId}/`);
+}
+
+// Status API
+// ---------------------------------------------------
+export async function getListStatus() {
+  return request(`status/`);
+}
+
+export async function postStatus(data: CreateStatusType) {
+  return request("status/", "POST", data);
 }

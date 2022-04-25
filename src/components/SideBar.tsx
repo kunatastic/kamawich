@@ -2,18 +2,18 @@ import { Link, navigate, useLocationChange } from "raviger";
 import React, { useContext, useState } from "react";
 import { UserLoginContext } from "../context/UserLoginContext";
 import { logout } from "../utils/ApiUtils";
+import { getDay, timeOfDay } from "../utils/TimeUtil";
 
 function SideBar(props: { children: React.ReactNode }) {
   const { setUser } = useContext(UserLoginContext);
   const routesLinks = [
     { label: "Home", route: "/", icon: "home" },
-    { label: "Boards", route: "/boards", icon: "columns" },
+    { label: "Boards", route: "/board", icon: "columns" },
     { label: "To Do", route: "/todo", icon: "list" },
   ];
 
   const [location, setLoc] = useState<any>(null);
   useLocationChange(setLoc, { onInitial: true });
-  console.log(location?.path);
 
   const NAME = "KUNAL KUMAR JHA";
   async function handleLogout() {
@@ -22,51 +22,13 @@ function SideBar(props: { children: React.ReactNode }) {
     navigate("/");
   }
 
-  function timeOfDay() {
-    const date = new Date();
-    const hours = date.getHours();
-    if (hours < 12) {
-      return "Morning";
-    } else if (hours >= 12 && hours < 17) {
-      return "Afternoon";
-    } else {
-      return "Evening";
-    }
-  }
-
-  function getDay() {
-    let outputString;
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    const date = new Date();
-    const day = date.getDay();
-    const month = date.getMonth();
-    const dayOfMonth = date.getDate();
-
-    outputString = days[day] + ", " + months[month] + " " + dayOfMonth;
-    return outputString;
-  }
-
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <div className="h-max sys-app-notCollapsed">
         <div className="mx-auto flex h-full">
           {/* SIDEBAR */}
-          <div className="w-64 h-full fixed left-0 top-0">
-            <div className="w-full py-8 h-full relative text-white bg-gray-900 text-left capitalize font-medium shadow-xl">
+          <div className="w-1/6 h-full fixed left-0 top-0 bg-gray-900 min-h-screen">
+            <div className="w-full py-8 h-full relative text-white text-left capitalize font-medium shadow-xl">
               <Link href="/">
                 <h1 className="pb-10 px-2 font-semibold text-xl flex justify-center gap-2">
                   <span className="text-2xl text-gray-200">Kamawich</span>
@@ -131,7 +93,7 @@ function SideBar(props: { children: React.ReactNode }) {
               </span>
             </div>
           </div>
-          <div className="ml-64 w-full">
+          <div className="ml-64 w-5/6 min-h-screen bg-opacity-20 bg-white">
             <div className="h-max sys-app-notCollapsed">
               <div className="px-10 py-10">
                 {/* Greetings and time */}

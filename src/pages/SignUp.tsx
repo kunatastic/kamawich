@@ -1,26 +1,19 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Link, navigate } from "raviger";
 import Header from "../components/NavBar";
 import { signup } from "../utils/ApiUtils";
-import { UserLoginContext } from "../context/UserLoginContext";
+import { UserSignupType } from "../types/AppTypes";
 
 function SignUp() {
-  // const [formData, setFormData] = useState({
-  //   username: "",
-  //   email: "",
-  //   password1: "",
-  //   password2: "",
-  // });
-  const [formData, setFormData] = useState({
-    username: "test123",
-    email: "test123@gmail.com",
-    password1: "Welcome@123",
-    password2: "Welcome@123",
+  const [formData, setFormData] = useState<UserSignupType>({
+    username: "",
+    email: "",
+    password1: "",
+    password2: "",
   });
 
   async function formSubmitHandler(event: React.FormEvent) {
     event.preventDefault();
-    console.log(formData);
     try {
       await signup(formData);
       navigate("/signin");

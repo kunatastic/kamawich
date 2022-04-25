@@ -4,6 +4,7 @@ import { About, Boards, Dashboard, Landing, SignIn, SignUp, Todo } from "./pages
 import Container from "./common/Container";
 import ProtectRoute from "./common/ProtectedRoute";
 import { UserLoginContext } from "./context/UserLoginContext";
+import DetailedBoard from "./pages/DetailedBoard";
 
 function App() {
   const { user, loggedIn } = useContext(UserLoginContext);
@@ -18,14 +19,17 @@ function App() {
         <Todo />
       </ProtectRoute>
     ),
-    "/boards": () => (
+    "/board": () => (
       <ProtectRoute>
         <Boards />
       </ProtectRoute>
     ),
+    "/board/:boardId": ({ boardId }: { boardId: string }) => (
+      <ProtectRoute>
+        <DetailedBoard boardId={boardId} />
+      </ProtectRoute>
+    ),
   };
-
-  console.log(user);
 
   let routeResult = useRoutes(routes);
   return <Container>{routeResult}</Container>;

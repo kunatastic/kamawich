@@ -4,20 +4,19 @@ import { Link, navigate } from "raviger";
 import Header from "../components/NavBar";
 import { login } from "../utils/ApiUtils";
 import { UserLoginContext } from "../context/UserLoginContext";
+import { UserLoginType } from "../types/AppTypes";
 
 function SignIn() {
   const { setUser } = useContext(UserLoginContext);
-  const [formData, setFormData] = useState<{ username: string; password: string }>({
+  const [formData, setFormData] = useState<UserLoginType>({
     username: "admin",
     password: "devadminpass",
   });
 
   async function formSubmitHandler(event: React.FormEvent) {
     event.preventDefault();
-    console.log(formData);
     try {
       const data = await login(formData);
-      console.log(data);
       localStorage.setItem("token", data.token);
       await setUser();
       // navigate("/");
