@@ -40,6 +40,8 @@ function DetailedBoard(props: { boardId: string }) {
   useEffect(() => {
     getBoardData();
     getStatusListData();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (pageDoNotExist) {

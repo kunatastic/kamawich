@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link, navigate } from "raviger";
+import { Link } from "raviger";
 
 import Header from "../components/NavBar";
 import { login } from "../utils/ApiUtils";

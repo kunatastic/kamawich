@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { BoardType } from "../types/AppTypes";
 import { formatServerTime } from "../utils/TimeUtil";
 
 function BoardCard(props: BoardType) {
-  const [showDropDown, setShowDropDown] = useState(false);
+  // const [showDropDown, setShowDropDown] = useState(false);
   return (
     <>
       <div

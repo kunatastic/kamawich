@@ -7,7 +7,7 @@ import { UserLoginContext } from "./context/UserLoginContext";
 import DetailedBoard from "./pages/DetailedBoard";
 
 function App() {
-  const { user, loggedIn } = useContext(UserLoginContext);
+  const { loggedIn } = useContext(UserLoginContext);
 
   const routes = {
     "/": () => <>{loggedIn ? <Dashboard /> : <Landing />}</>,

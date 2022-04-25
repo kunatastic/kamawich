@@ -4,10 +4,8 @@ import Modal from "../common/Modal";
 import BoardCard from "../components/BoardCard";
 import CreateBoard from "../components/CreateBoard";
 import SideBar from "../components/SideBar";
-import { OPACITY } from "../config";
 import { BoardResponseType, BoardType } from "../types/AppTypes";
-import { getListBoards, postBoard } from "../utils/ApiUtils";
-import { formatServerTime } from "../utils/TimeUtil";
+import { getListBoards } from "../utils/ApiUtils";
 
 function Boards() {
   const [newBoardModal, setNewBoardModal] = useState(false);
