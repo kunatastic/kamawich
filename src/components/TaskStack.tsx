@@ -11,8 +11,9 @@ function TaskStack(props: {
   statusId: string;
   setNewTasks: (statusId: string, results: TaskType[]) => void;
   statusList: StatusType[];
+  setTaskList: React.Dispatch<React.SetStateAction<{ [id: string]: TaskType[] }>>;
 }) {
-  const { taskList, setNewTasks, board, statusId, statusList } = props;
+  const { taskList, setNewTasks, board, statusId, statusList, setTaskList } = props;
 
   async function getAllTasks() {
     try {
@@ -39,7 +40,7 @@ function TaskStack(props: {
         {taskList.map((task, index) => (
           <div
             key={index}
-            className="bg-red-100 border border-red-500 h-full my-2 py-5 cursor-pointer font-semibold text-center rounded"
+            className="bg-gray-900 hover:bg-gray-800 text-white border border-green-500 h-full my-2 py-5 cursor-pointer font-semibold text-center rounded"
             style={{
               width: `${PER_CARD_WIDTH}px`,
             }}
@@ -59,6 +60,7 @@ function TaskStack(props: {
               board={board}
               onCloseCB={() => setShowUpdateStatusModal({ ...showUpdateStatusModal, show: false })}
               initialStatus={taskList[showUpdateStatusModal.item]}
+              setTaskList={setTaskList}
             />
           </Modal>
         )}

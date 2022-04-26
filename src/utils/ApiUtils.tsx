@@ -126,3 +126,8 @@ export async function updateTask(boardId: string, taskId: string, data: CreateTa
 export async function deleteTask(boardId: string, taskId: string) {
   return request(`boards/${boardId}/tasks/${taskId}/`, "DELETE");
 }
+
+// Dashboard API
+export async function getAllTasks() {
+  return request("tasks/");
+}

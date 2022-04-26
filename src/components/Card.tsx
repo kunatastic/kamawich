@@ -4,7 +4,7 @@ function Card(props: { color: string; hoverColor: string; title: string; count: 
   const { color, hoverColor, title, count } = props;
   return (
     <>
-      <div className="col-span-1">
+      <div className="col-span-1 h-full">
         <div
           className={`rounded-2xl shadow-xl p-5 ${color} ${hoverColor} hover:shadow-md bg-opacity-20`}
         >

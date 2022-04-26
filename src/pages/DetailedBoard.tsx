@@ -92,18 +92,21 @@ function DetailedBoard(props: { boardId: string }) {
         </section>
 
         {/* horizontal scroll section */}
-        <section className="board-card flex overflow-x-auto overflow-y-hidden space-x-9 mt-10 py-4 px-2 scroll-smooth">
+        <section
+          style={{ minHeight: "60vh" }}
+          className="board-card bg-slate-300 flex shadow-xl rounded overflow-x-auto overflow-y-hidden space-x-4 mt-10 py-4 px-2 scroll-smooth"
+        >
           {boardData &&
             statusList.map((status: StatusType, index) => {
               return (
-                <div key={index} className="flex-shrink-0 h-full">
+                <div key={index} className="flex-shrink-0 bg-gray-700 py-4 px-2 rounded-md h-full">
                   <div
-                    className="bg-green-100 border border-green-500 h-full py-5 font-semibold text-center cursor-pointer rounded"
+                    className="bg-gray-600 hover:bg-gray-700 shadow-inner text-gray-100 border-2 border-blue-500 h-full py-5 font-semibold text-center cursor-pointer rounded"
                     style={{ width: `${PER_CARD_WIDTH}px` }}
                     onClick={() => setShowUpdateStatusModal({ show: true, item: index })}
                   >
-                    <h3 className="text-xl">{status.title}</h3>
-                    <h3 className="font-light">{status?.description}</h3>
+                    <h3 className="text-2xl">{status.title}</h3>
+                    <h3 className="font-light text-sm">{status?.description}</h3>
                   </div>
                   <TaskStack
                     taskList={taskList[status.id]}
@@ -111,15 +114,15 @@ function DetailedBoard(props: { boardId: string }) {
                     setNewTasks={setNewTasks}
                     statusId={status.id}
                     statusList={statusList}
+                    setTaskList={setTaskList}
                   />
                 </div>
               );
             })}
           <div className="flex-shrink-0">
             <button
-              style={{ width: `${PER_CARD_WIDTH}px` }}
               onClick={() => setNewStatusModal(true)}
-              className="bg-blue-100 border border-blue-500 py-5 text-xl font-semibold text-center rounded"
+              className="border-2 border-black py-2 px-4 w-25 text-xl font-semibold text-center rounded"
             >
               Add new status
             </button>
@@ -133,6 +136,7 @@ function DetailedBoard(props: { boardId: string }) {
               statusList={statusList}
               board={boardData}
               onCloseCB={() => setNewTaskModal(false)}
+              setTaskList={setTaskList}
             />
           </Modal>
         )}

@@ -44,11 +44,11 @@ function Boards() {
         </button>
       </section>
       {/* Cards Section */}
-      <section className="py-10 px-5 mt-10 border-transparent border-t-blue-500 border-2">
+      <section className="py-10 px-5 mt-10 border-transparent border-t-gray-900 border-2">
         {loading && <div className="text-3xl text-center w-full font-bold">Loading...</div>}
         <div className="grid grid-cols-3 gap-8">
           {boardList.map((board, index) => (
-            <Link href={`/board/${board.id}/`}>
+            <Link href={`/board/${board.id}/`} key={index}>
               <BoardCard key={index} {...board} />
             </Link>
           ))}

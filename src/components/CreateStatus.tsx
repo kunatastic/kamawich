@@ -39,7 +39,8 @@ function CreateStatus(props: {
     event.preventDefault();
     try {
       if (initialData) {
-        await deleteStatus(initialData?.id);
+        const data = await deleteStatus(initialData.id);
+        console.log(data);
         setStatusList((prevState) => prevState.filter((status) => status.id !== initialData.id));
         onCloseCB();
       }

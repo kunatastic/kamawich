@@ -7,10 +7,9 @@ function CreateTask(props: {
   board: BoardType;
   statusList: StatusType[];
   initialStatus?: TaskType;
-  // setBoardList: React.Dispatch<React.SetStateAction<BoardType[]>>;
+  setTaskList: React.Dispatch<React.SetStateAction<{ [id: string]: TaskType[] }>>;
 }) {
-  // const { board, statusList, onCloseCB, setBoardList } = props;
-  const { board, statusList, onCloseCB, initialStatus } = props;
+  const { board, statusList, onCloseCB, initialStatus, setTaskList } = props;
   const [taskCreationError, setTaskCreationError] = useState(false);
 
   const [formData, setFormData] = useState<CreateTaskType>({
@@ -31,15 +30,36 @@ function CreateTask(props: {
     }
     try {
       if (!initialStatus) {
-        await postTask(board.id, formData);
+        const data: TaskType = await postTask(board.id, formData);
+        setTaskList((prevState) => {
+          const newTaskList = { ...prevState };
+          newTaskList[data.status.toString()].push(data);
+          return newTaskList;
+        });
         setTaskCreationError(false);
       } else {
-        await updateTask(board.id, initialStatus.id, formData);
+        const data = await updateTask(board.id, initialStatus.id, formData);
+        setTaskList((prevState) => {
+          const newTaskList = { ...prevState };
+          // if the status has changed, we need to remove the old status and add the new one
+          if (data.status !== initialStatus.status) {
+            const oldStatusIndex = prevState[initialStatus.status.toString()].findIndex(
+              (task) => task.id === data.id
+            );
+            prevState[initialStatus.status.toString()].splice(oldStatusIndex, 1);
+            newTaskList[data.status.toString()].push(data);
+          } else {
+            const index = prevState[initialStatus.status.toString()].findIndex(
+              (task) => task.id === data.id
+            );
+            prevState[initialStatus.status.toString()][index] = data;
+          }
+          return newTaskList;
+        });
         setTaskCreationError(false);
       }
       // setBoardList((prevState) => [...prevState, data]);
       onCloseCB();
-      window.location.reload();
     } catch (err) {
       console.log(err);
     }
@@ -50,7 +70,14 @@ function CreateTask(props: {
     try {
       if (initialStatus) {
         await deleteTask(board.id, initialStatus.id);
-        // setBoardList((prevState) => prevState.filter((board) => board.id !== initialData.id));
+        setTaskList((prevState) => {
+          const newTaskList = { ...prevState };
+          const index = prevState[initialStatus.status.toString()].findIndex(
+            (task) => task.id === initialStatus.id
+          );
+          prevState[initialStatus.status.toString()].splice(index, 1);
+          return newTaskList;
+        });
         onCloseCB();
       }
     } catch (err) {
