@@ -1,24 +1,25 @@
 import React, { useState } from "react";
-import { BoardType, CreateTaskType, StatusType } from "../types/AppTypes";
-import { postTask } from "../utils/ApiUtils";
+import { BoardType, CreateTaskType, StatusType, TaskType } from "../types/AppTypes";
+import { deleteTask, postTask, updateTask } from "../utils/ApiUtils";
 
 function CreateTask(props: {
   onCloseCB: () => void;
   board: BoardType;
   statusList: StatusType[];
+  initialStatus?: TaskType;
   // setBoardList: React.Dispatch<React.SetStateAction<BoardType[]>>;
 }) {
   // const { board, statusList, onCloseCB, setBoardList } = props;
-  const { board, statusList, onCloseCB } = props;
+  const { board, statusList, onCloseCB, initialStatus } = props;
   const [taskCreationError, setTaskCreationError] = useState(false);
 
   const [formData, setFormData] = useState<CreateTaskType>({
     board_object: board,
-    title: "",
-    description: "",
-    status_object: {} as StatusType,
+    title: initialStatus ? initialStatus.title : "",
+    description: initialStatus ? initialStatus.description : "",
+    status_object: initialStatus ? initialStatus.status_object : ({} as StatusType),
     board: board.id,
-    status: -1,
+    status: initialStatus ? initialStatus.status : -1,
   });
 
   async function formSubmitHandler(event: React.FormEvent) {
@@ -29,13 +30,29 @@ function CreateTask(props: {
       return;
     }
     try {
-      console.log(formData);
-      const data = await postTask(board.id, formData);
-      onCloseCB();
-      setTaskCreationError(false);
+      if (!initialStatus) {
+        await postTask(board.id, formData);
+        setTaskCreationError(false);
+      } else {
+        await updateTask(board.id, initialStatus.id, formData);
+        setTaskCreationError(false);
+      }
       // setBoardList((prevState) => [...prevState, data]);
-      console.log(data);
+      onCloseCB();
       window.location.reload();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function deleteHandler(event: React.FormEvent) {
+    event.preventDefault();
+    try {
+      if (initialStatus) {
+        await deleteTask(board.id, initialStatus.id);
+        // setBoardList((prevState) => prevState.filter((board) => board.id !== initialData.id));
+        onCloseCB();
+      }
     } catch (err) {
       console.log(err);
     }
@@ -43,7 +60,9 @@ function CreateTask(props: {
 
   return (
     <>
-      <h1 className="text-3xl font-semibold py-5">Add a new task</h1>
+      <h1 className="text-3xl font-semibold py-5">
+        {initialStatus ? "Update existing task" : "Create a new task"}
+      </h1>
       <form onSubmit={formSubmitHandler}>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-full px-3">
@@ -112,16 +131,38 @@ function CreateTask(props: {
             </select>
           </div>
         </div>
-        <div className="flex flex-wrap -mx-3 mt-6">
-          <div className="w-full px-3">
-            <button
-              type="submit"
-              className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full"
-            >
-              Create task
-            </button>
+        {!initialStatus ? (
+          <div className="flex flex-wrap -mx-3 mt-6">
+            <div className="w-full px-3">
+              <button
+                type="submit"
+                className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full"
+              >
+                Create new task
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex -mx-3 mt-6">
+            <div className="w-full px-3">
+              <button
+                type="submit"
+                className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full"
+              >
+                Update task
+              </button>
+            </div>
+            <div className="w-full px-3">
+              <button
+                type="button"
+                onClick={deleteHandler}
+                className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-red-900 hover:bg-red-800 w-full"
+              >
+                Delete status
+              </button>
+            </div>
+          </div>
+        )}
       </form>
     </>
   );

@@ -1,20 +1,48 @@
 import React, { useState } from "react";
 import { CreateStatusType, StatusType } from "../types/AppTypes";
-import { postStatus } from "../utils/ApiUtils";
+import { deleteStatus, postStatus, updateStatus } from "../utils/ApiUtils";
 
 function CreateStatus(props: {
   onCloseCB: () => void;
   setStatusList: React.Dispatch<React.SetStateAction<StatusType[]>>;
+  initialData?: StatusType;
 }) {
-  const [formData, setFormData] = useState<CreateStatusType>({ title: "", description: "" });
+  const { onCloseCB, setStatusList, initialData } = props;
+  const [formData, setFormData] = useState<CreateStatusType>({
+    title: initialData ? initialData.title : "",
+    description: initialData ? initialData.description : "",
+  });
 
   async function formSubmitHandler(event: React.FormEvent) {
     event.preventDefault();
     try {
-      const data = await postStatus(formData);
-      props.onCloseCB();
-      props.setStatusList((prevState) => [...prevState, data]);
-      console.log(data);
+      let data: StatusType;
+      if (!initialData) {
+        data = await postStatus(formData);
+        setStatusList((prevState) => [...prevState, data]);
+        onCloseCB();
+      } else {
+        data = await updateStatus(formData, initialData.id);
+        setStatusList((prevState) => {
+          const index = prevState.findIndex((status) => status.id === data.id);
+          prevState[index] = data;
+          return [...prevState];
+        });
+        onCloseCB();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function deleteHandler(event: React.FormEvent) {
+    event.preventDefault();
+    try {
+      if (initialData) {
+        await deleteStatus(initialData?.id);
+        setStatusList((prevState) => prevState.filter((status) => status.id !== initialData.id));
+        onCloseCB();
+      }
     } catch (err) {
       console.log(err);
     }
@@ -22,7 +50,9 @@ function CreateStatus(props: {
 
   return (
     <>
-      <h1 className="text-3xl font-semibold py-5">Add a new status</h1>
+      <h1 className="text-3xl font-semibold py-5">
+        {!initialData ? "Add a new status" : "Update status"}
+      </h1>
       <form onSubmit={formSubmitHandler}>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-full px-3">
@@ -56,16 +86,38 @@ function CreateStatus(props: {
           </div>
         </div>
 
-        <div className="flex flex-wrap -mx-3 mt-6">
-          <div className="w-full px-3">
-            <button
-              type="submit"
-              className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full"
-            >
-              Create Status
-            </button>
+        {!initialData ? (
+          <div className="flex flex-wrap -mx-3 mt-6">
+            <div className="w-full px-3">
+              <button
+                type="submit"
+                className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full"
+              >
+                Create new status
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex -mx-3 mt-6">
+            <div className="w-full px-3">
+              <button
+                type="submit"
+                className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-gray-900 hover:bg-gray-800 w-full"
+              >
+                Update status
+              </button>
+            </div>
+            <div className="w-full px-3">
+              <button
+                type="button"
+                onClick={deleteHandler}
+                className="font-medium inline-flex items-center justify-center border border-transparent rounded leading-snug transition duration-150 ease-in-out px-8 py-3 shadow-lg text-white bg-red-900 hover:bg-red-800 w-full"
+              >
+                Delete status
+              </button>
+            </div>
+          </div>
+        )}
       </form>
     </>
   );

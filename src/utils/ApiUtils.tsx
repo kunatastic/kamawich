@@ -101,6 +101,14 @@ export async function postStatus(data: CreateStatusType) {
   return request("status/", "POST", data);
 }
 
+export async function updateStatus(data: CreateStatusType, statusId: string) {
+  return request(`status/${statusId}/`, "PATCH", data);
+}
+
+export async function deleteStatus(statusId: string) {
+  return request(`status/${statusId}/`, "DELETE");
+}
+
 // Tasks API
 // ---------------------------------------------------
 export async function getListTasks(boardId: string, status?: string) {
@@ -109,4 +117,12 @@ export async function getListTasks(boardId: string, status?: string) {
 
 export async function postTask(boardId: string, data: CreateTaskType) {
   return request(`boards/${boardId}/tasks/`, "POST", data);
+}
+
+export async function updateTask(boardId: string, taskId: string, data: CreateTaskType) {
+  return request(`boards/${boardId}/tasks/${taskId}/`, "PATCH", data);
+}
+
+export async function deleteTask(boardId: string, taskId: string) {
+  return request(`boards/${boardId}/tasks/${taskId}/`, "DELETE");
 }

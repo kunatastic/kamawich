@@ -3,18 +3,21 @@ import Modal from "../common/Modal";
 import { PER_CARD_WIDTH } from "../config";
 import { BoardType, StatusType, TaskResponseType, TaskType } from "../types/AppTypes";
 import { getListTasks } from "../utils/ApiUtils";
-import CreateStatus from "./CreateStatus";
+import CreateTask from "./CreateTask";
 
-function TaskStack(props: { status: StatusType; board: BoardType }) {
-  const { status, board } = props;
-
-  const [taskList, setTaskList] = useState<TaskType[]>([]);
-  const [showUpdateStatusModal, setShowUpdateStatusModal] = useState(false);
+function TaskStack(props: {
+  taskList: TaskType[];
+  board: BoardType;
+  statusId: string;
+  setNewTasks: (statusId: string, results: TaskType[]) => void;
+  statusList: StatusType[];
+}) {
+  const { taskList, setNewTasks, board, statusId, statusList } = props;
 
   async function getAllTasks() {
     try {
-      const data: TaskResponseType = await getListTasks(board.id, status.id);
-      setTaskList(data.results);
+      const data: TaskResponseType = await getListTasks(board.id, statusId);
+      setNewTasks(statusId, data.results);
     } catch (error) {
       console.log(error);
     }
@@ -22,42 +25,46 @@ function TaskStack(props: { status: StatusType; board: BoardType }) {
 
   useEffect(() => {
     getAllTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <div className="flex-shrink-0 h-full">
-      <div
-        key={status.id}
-        className="bg-green-100 border border-green-500 h-full py-5 font-semibold text-center rounded"
-        style={{
-          width: `${PER_CARD_WIDTH}px`,
-        }}
-        onClick={() => setShowUpdateStatusModal(true)}
-      >
-        <h3 className="text-xl">{status.title}</h3>
-        <h3 className="font-light">{status?.description}</h3>
+  const [showUpdateStatusModal, setShowUpdateStatusModal] = useState<{
+    show: boolean;
+    item: number;
+  }>({ show: false, item: -1 });
+
+  if (taskList)
+    return (
+      <div className="">
+        {taskList.map((task, index) => (
+          <div
+            key={index}
+            className="bg-red-100 border border-red-500 h-full my-2 py-5 cursor-pointer font-semibold text-center rounded"
+            style={{
+              width: `${PER_CARD_WIDTH}px`,
+            }}
+            onClick={() => setShowUpdateStatusModal({ show: true, item: index })}
+          >
+            <h3 className="text-xl">{task.title}</h3>
+            <h3 className="font-light">{task.description}</h3>
+          </div>
+        ))}
+
+        {showUpdateStatusModal.show && (
+          <Modal
+            onCloseCB={() => setShowUpdateStatusModal({ ...showUpdateStatusModal, show: false })}
+          >
+            <CreateTask
+              statusList={statusList}
+              board={board}
+              onCloseCB={() => setShowUpdateStatusModal({ ...showUpdateStatusModal, show: false })}
+              initialStatus={taskList[showUpdateStatusModal.item]}
+            />
+          </Modal>
+        )}
       </div>
-
-      {showUpdateStatusModal && (
-        <Modal onCloseCB={() => setShowUpdateStatusModal(false)}>
-          {/* <CreateStatus board={board} onCloseCB={() => setShowUpdateStatusModal(false)} /> */}
-        </Modal>
-      )}
-
-      {taskList.map((task) => (
-        <div
-          key={task.id}
-          className="bg-red-100 border border-red-500 h-full my-2 py-5 font-semibold text-center rounded"
-          style={{
-            width: `${PER_CARD_WIDTH}px`,
-          }}
-        >
-          <h3 className="text-xl">{task.title}</h3>
-          <h3 className="font-light">{task.description}</h3>
-        </div>
-      ))}
-    </div>
-  );
+    );
+  return null;
 }
 
 export default TaskStack;
